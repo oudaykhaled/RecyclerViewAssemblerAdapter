@@ -17,21 +17,27 @@ class CombinedListActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_combined_list)
+
         rvCombined.layoutManager = LinearLayoutManager(this)
 
+        //All Entries
         var lstEntries = ArrayList<Any>()
 
+        //Prepare First Adapter
         var clientProductRecyclerView = ClientProductRecyclerViewAdapter()
         clientProductRecyclerView.setData(DataProvider.getClientsAndProductsList())
 
+        //Prepare Second Adapter
         var advAdapter = AdsRecyclerViewAdapter()
         advAdapter.setData(DataProvider.getAds())
 
 
+        //Add All entries combined
         lstEntries.addAll(DataProvider.getClientsAndProductsList())
         lstEntries.add(0, DataProvider.getAds()[0])
         lstEntries.add(5, DataProvider.getAds()[1])
 
+        //Build the Assembler adapter
         var assembler = RecyclerViewAssemblerAdapter.Builder()
             .addAdapter(
                 clientProductRecyclerView,
@@ -44,14 +50,17 @@ class CombinedListActivity : AppCompatActivity() {
             ).build(object : RecyclerViewAssemblerAdapter.PositionAdapterMapper{
                 override fun map(position: Int): RecyclerViewAssemblerElement {
                     return when {
+                        //Map Adapters
                         lstEntries[position] is Adv -> advAdapter
                         else -> clientProductRecyclerView
                     }
                 }
             })
 
+        //Attach Assembler adapter to recyclerview
         rvCombined.adapter = assembler
 
+        //Add All data to assembler adapter
         assembler.setData(lstEntries)
     }
 }
